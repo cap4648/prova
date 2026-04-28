@@ -3,10 +3,12 @@ pipeline {
 
     stages {
         stage('Build') {
-            steps {
-                echo 'Building..'
-                sh './mvnw clean package -DskipTests'
-            }
+   steps {
+         // "maven3" deve corrispondere al nome dato nei Tools
+         withMaven(maven: 'maven3') {
+             sh "mvn clean package -DskipTests"
+         }
+     }
         }
         stage('Test') {
             steps {
