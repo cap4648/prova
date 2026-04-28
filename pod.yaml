@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapi-pod
+spec:
+  containers:
+    - name: myapi
+      image: snucci/myapi:latest
+      ports:
+        - containerPort: 8080
