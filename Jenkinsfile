@@ -13,7 +13,7 @@ stage('Docker Build & Push') {
     steps {
         script {
 
-            # usa docker interno
+            // usa docker interno
             dockerTool 'docker-stable'
 
             // docker.withRegistry(URL, CREDENTIALS_ID)
