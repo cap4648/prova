@@ -19,7 +19,7 @@ stage('Initialize & Build') {
             steps {
                 script {
                     // 1. Forza il download del tool e recupera il percorso
-                    def dockerHome = tool name: 'docker-stable', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
+                    def dockerHome = tool name: 'docker-stable2', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
 
                     // 2. Inserisce il binario di Docker nel PATH della pipeline
                     env.PATH = "${dockerHome}/bin:${env.PATH}"
