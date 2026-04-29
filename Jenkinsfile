@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+tools {
+        // Il nome deve essere IDENTICO a quello salvato in Jenkins -> Tools
+        dockerTool 'docker-stable'
+    }
+
     stages {
         stage('Build') {
             steps {
@@ -12,9 +17,6 @@ pipeline {
 stage('Docker Build & Push') {
     steps {
         script {
-
-            // usa docker interno
-            dockerTool 'docker-stable'
 
             // docker.withRegistry(URL, CREDENTIALS_ID)
             // Se lasci l'URL vuoto '', Jenkins usa di default Docker Hub
