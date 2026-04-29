@@ -59,19 +59,14 @@ environment {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Utilizza il plugin Kubernetes CLI con le credenziali salvate
+                    echo "Inizio Deploy dell'immagine ${DOCKER_HUB_USER}/${APP_NAME}:${env.BUILD_ID}..."
+
+                    // Usa il plugin Kubernetes CLI con il file config che hai caricato
                     withKubeConfig([credentialsId: 'kubeconfig-credentials']) {
+                        // Ora 'kubectl' verrà trovato automaticamente
+                        sh "kubectl set image deployment/myapi-deployment myapi=${DOCKER_HUB_USER}/${APP_NAME}:${env.BUILD_ID} --record"
 
-                        echo "Inizio Deploy dell'immagine ${DOCKER_HUB_USER}/${APP_NAME}:${env.BUILD_ID}..."
-
-                        // 1. Aggiorna l'immagine nel deployment esistente
-                        // Nota: il nome del deployment deve corrispondere a quello nel tuo file YAML di K8s
-                        sh "kubectl set image deployment/${APP_NAME}-deployment ${APP_NAME}=${DOCKER_HUB_USER}/${APP_NAME}:${env.BUILD_ID} --record"
-
-                        // 2. Forza il rollout per essere sicuri che i pod vengano aggiornati
-                        sh "kubectl rollout status deployment/${APP_NAME}-deployment"
-
-                        echo "Deploy completato con successo!"
+                        sh "kubectl rollout status deployment/myapi-deployment"
                     }
                 }
             }
