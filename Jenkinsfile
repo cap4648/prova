@@ -14,6 +14,23 @@ tools {
             }
         }
 
+
+stage('Initialize & Build') {
+            steps {
+                script {
+                    // 1. Forza il download del tool e recupera il percorso
+                    def dockerHome = tool name: 'docker-stable', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
+
+                    // 2. Inserisce il binario di Docker nel PATH della pipeline
+                    env.PATH = "${dockerHome}/bin:${env.PATH}"
+
+                    echo "Compilazione Java..."
+                    sh 'chmod +x mvnw'
+                    sh './mvnw clean package -DskipTests'
+                }
+            }
+        }
+
 stage('Docker Build & Push') {
     steps {
         script {
