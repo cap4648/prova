@@ -3,7 +3,7 @@ pipeline {
 
 tools {
         // Il nome deve essere IDENTICO a quello salvato in Jenkins -> Tools
-        dockerTool 'docker-stable'
+        dockerTool 'docker-stable2'
     }
 
     stages {
