@@ -64,9 +64,9 @@ environment {
                     // Usa il plugin Kubernetes CLI con il file config che hai caricato
                     withKubeConfig([credentialsId: 'kubeconfig-credentials']) {
                         // Ora 'kubectl' verrà trovato automaticamente
-                        sh "kubectl set image deployment/myapi-deployment myapi=${DOCKER_HUB_USER}/${APP_NAME}:${env.BUILD_ID} --record"
+                        sh "kubectl --insecure-skip-tls-verify=true set image deployment/myapi-deployment myapi=${DOCKER_HUB_USER}/${APP_NAME}:${env.BUILD_ID}"
 
-                        sh "kubectl rollout status deployment/myapi-deployment"
+                        sh "kubectl --insecure-skip-tls-verify=true rollout status deployment/myapi-deployment"
                     }
                 }
             }
