@@ -18,7 +18,7 @@ stage('Docker Build & Push') {
 
             // docker.withRegistry(URL, CREDENTIALS_ID)
             // Se lasci l'URL vuoto '', Jenkins usa di default Docker Hub
-            docker.withRegistry('', 'docker-hub-credential') {
+            docker.withRegistry('', 'docker_hub_credential') {
 
                 // 1. Build: crea l'immagine leggendo il Dockerfile nel path corrente (.)
                 def myImage = docker.build("snucci/myapi:${env.BUILD_ID}")
