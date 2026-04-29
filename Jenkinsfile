@@ -15,12 +15,12 @@ environment {
         stage('Initialize Tools') {
             steps {
                 script {
-                    // Otteniamo il percorso del binario una volta per tutte
                     def dockerHome = tool name: 'docker-stable2', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
                     env.DOCKER_BIN = "${dockerHome}/bin/docker"
 
-                    echo "Controllo Docker..."
-                    sh "${env.DOCKER_BIN} version"
+                    echo "Controllo Docker e Socket..."
+                    // Aggiungiamo -H unix:///var/run/docker.sock per forzare il puntamento al file mappato
+                    sh "${env.DOCKER_BIN} -H unix:///var/run/docker.sock version"
                 }
             }
         }
