@@ -18,9 +18,11 @@ environment {
                     def dockerHome = tool name: 'docker-stable2', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
                     env.DOCKER_BIN = "${dockerHome}/bin/docker"
 
-                    echo "Controllo Docker e Socket..."
-                    // Aggiungiamo -H unix:///var/run/docker.sock per forzare il puntamento al file mappato
-                    sh "${env.DOCKER_BIN} -H unix:///var/run/docker.sock version"
+                    // Definiamo l'host per tutti i comandi successivi
+                    env.DOCKER_HOST = "unix:///var/run/docker.sock"
+
+                    echo "Controllo Connessione al Daemon..."
+                    sh "${env.DOCKER_BIN} version"
                 }
             }
         }
