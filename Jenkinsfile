@@ -1,10 +1,13 @@
 pipeline {
     agent any
 
-tools {
-        // Il nome deve essere IDENTICO a quello salvato in Jenkins -> Tools
-        dockerTool 'docker-stable2'
+environment {
+        DOCKER_HUB_USER = 'snucci'
+        APP_NAME        = 'myapi'
+        DOCKER_CREDS    = 'docker_hub_credential'
     }
+
+
 
     stages {
         stage('Build') {
@@ -15,42 +18,42 @@ tools {
         }
 
 
-stage('Initialize & Build') {
+stage('Initialize Tools') {
             steps {
                 script {
-                    // 1. Forza il download del tool e recupera il percorso
+                    // Otteniamo il percorso del binario una volta per tutte
                     def dockerHome = tool name: 'docker-stable2', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
+                    env.DOCKER_BIN = "${dockerHome}/bin/docker"
 
-                    // 2. Inserisce il binario di Docker nel PATH della pipeline
-                    env.PATH = "${dockerHome}/bin:${env.PATH}"
-
-                    echo "Compilazione Java..."
-                    sh 'chmod +x mvnw'
-                    sh './mvnw clean package -DskipTests'
+                    echo "Controllo Docker..."
+                    sh "${env.DOCKER_BIN} version"
                 }
             }
+        }  }
         }
 
 stage('Docker Build & Push') {
-    steps {
-        script {
+            steps {
+                // Usiamo withCredentials per gestire il login in sicurezza senza il plugin Docker
+                withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh """
+                        # Login manuale
+                        echo \$DOCKER_PASS | ${env.DOCKER_BIN} login -u \$DOCKER_USER --password-stdin
 
-            // docker.withRegistry(URL, CREDENTIALS_ID)
-            // Se lasci l'URL vuoto '', Jenkins usa di default Docker Hub
-            docker.withRegistry('', 'docker_hub_credential') {
+                        # Build
+                        ${env.DOCKER_BIN} build -t ${env.DOCKER_HUB_USER}/${env.APP_NAME}:${env.BUILD_ID} .
+                        ${env.DOCKER_BIN} tag ${env.DOCKER_HUB_USER}/${env.APP_NAME}:${env.BUILD_ID} ${env.DOCKER_HUB_USER}/${env.APP_NAME}:latest
 
-                // 1. Build: crea l'immagine leggendo il Dockerfile nel path corrente (.)
-                def myImage = docker.build("snucci/myapi:${env.BUILD_ID}")
+                        # Push
+                        ${env.DOCKER_BIN} push ${env.DOCKER_HUB_USER}/${env.APP_NAME}:${env.BUILD_ID}
+                        ${env.DOCKER_BIN} push ${env.DOCKER_HUB_USER}/${env.APP_NAME}:latest
 
-                // 2. Push: invia l'immagine con il tag specifico dell'ID build
-                myImage.push()
-
-                // 3. Tag aggiuntivo: è buona norma aggiornare anche il tag 'latest'
-                myImage.push('latest')
+                        # Logout per sicurezza
+                        ${env.DOCKER_BIN} logout
+                    """
+                }
             }
         }
-    }
-}
 
 
         stage('Test') {
