@@ -10,15 +10,9 @@ environment {
 
 
     stages {
-        stage('Build') {
-            steps {
-                echo 'Building..'
-                sh './mvnw clean package -DskipTests'
-            }
-        }
 
 
-stage('Initialize Tools') {
+        stage('Initialize Tools') {
             steps {
                 script {
                     // Otteniamo il percorso del binario una volta per tutte
@@ -29,8 +23,18 @@ stage('Initialize Tools') {
                     sh "${env.DOCKER_BIN} version"
                 }
             }
-        }  }
         }
+
+        stage('Build') {
+            steps {
+                echo 'Building..'
+                sh './mvnw clean package -DskipTests'
+            }
+        }
+
+
+
+
 
 stage('Docker Build & Push') {
             steps {
