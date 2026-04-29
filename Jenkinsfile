@@ -19,7 +19,8 @@ environment {
                     env.DOCKER_BIN = "${dockerHome}/bin/docker"
 
                     // Definiamo l'host per tutti i comandi successivi
-                    env.DOCKER_HOST = "unix:///var/run/docker.sock"
+                    //env.DOCKER_HOST = "unix:///var/run/docker.sock"
+                    env.DOCKER_HOST = "tcp://host.docker.internal:2375"
 
                     echo "Controllo Connessione al Daemon..."
                     sh "${env.DOCKER_BIN} version"
