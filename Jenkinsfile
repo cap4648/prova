@@ -12,18 +12,11 @@ environment {
     stages {
 
 
-        stage('Initialize Tools') {
+        stage('Check Docker Environment') {
             steps {
                 script {
-                    def dockerHome = tool name: 'docker-stable2', type: 'org.jenkinsci.plugins.docker.commons.tools.DockerTool'
-                    env.DOCKER_BIN = "${dockerHome}/bin/docker"
-
-                    // Definiamo l'host per tutti i comandi successivi
-                    //env.DOCKER_HOST = "unix:///var/run/docker.sock"
-                    env.DOCKER_HOST = "tcp://host.docker.internal:2375"
-
-                    echo "Controllo Connessione al Daemon..."
-                    sh "${env.DOCKER_BIN} version"
+                    // Verifichiamo se il comando docker di sistema funziona
+                    sh 'docker version'
                 }
             }
         }
@@ -39,28 +32,20 @@ environment {
 
 
 
-stage('Docker Build & Push') {
+        stage('Docker Build & Push') {
             steps {
-                // Usiamo withCredentials per gestire il login in sicurezza senza il plugin Docker
-                withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh """
-                        # Login manuale
-                        echo \$DOCKER_PASS | ${env.DOCKER_BIN} login -u \$DOCKER_USER --password-stdin
-
-                        # Build
-                        ${env.DOCKER_BIN} build -t ${env.DOCKER_HUB_USER}/${env.APP_NAME}:${env.BUILD_ID} .
-                        ${env.DOCKER_BIN} tag ${env.DOCKER_HUB_USER}/${env.APP_NAME}:${env.BUILD_ID} ${env.DOCKER_HUB_USER}/${env.APP_NAME}:latest
-
-                        # Push
-                        ${env.DOCKER_BIN} push ${env.DOCKER_HUB_USER}/${env.APP_NAME}:${env.BUILD_ID}
-                        ${env.DOCKER_BIN} push ${env.DOCKER_HUB_USER}/${env.APP_NAME}:latest
-
-                        # Logout per sicurezza
-                        ${env.DOCKER_BIN} logout
-                    """
+                script {
+                    // Usiamo il plugin Docker standard che ora troverà il docker di sistema
+                    docker.withRegistry('', DOCKER_CREDS) {
+                        def myImage = docker.build("${DOCKER_HUB_USER}/${APP_NAME}:${env.BUILD_ID}")
+                        myImage.push()
+                        myImage.push('latest')
+                    }
                 }
             }
         }
+
+
 
 
         stage('Test') {
