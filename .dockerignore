@@ -4,6 +4,6 @@ mvnw
 mvnw.cmd
 .idea/
 .git/
-Dockerfile
+Dockerfile_Standalone
 .dockerignore
 data_ora.txt

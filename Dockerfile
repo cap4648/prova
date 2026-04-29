@@ -1,13 +1,11 @@
-# Stage 1: Build the application
-FROM maven:3.8.5-openjdk-17 AS build
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
-
-# Stage 2: Run the application
+#Dockerfile per usage in pipeline jenkins
+#Crea il docker a partire a jar esistente
 FROM eclipse-temurin:17
-WORKDIR /app
-COPY --from=build /app/target/prova-1.0-SNAPSHOT.jar app.jar
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+# COPY --from=build /app/target/prova-1.0-SNAPSHOT.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","/app.jar"]
+
+
+
