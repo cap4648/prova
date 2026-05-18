@@ -6,30 +6,29 @@ http://localhost:8080/swagger-ui/index.html
 
 
 crea immagine
-docker build -t myapi .   
+docker build -f Dockerfile_Standalone  -t myapi:latest  .
 
-
-run
-docker run -p 8080:8080 myapi   
-
+SOLO PER PROVARE
+docker run -p 8080:8080 myapi
 http://localhost:8080/swagger-ui.html
 
 tag e copy image su registry
-
 docker login
 docker tag myapi:latest snucci/myapi:latest
 docker push snucci/myapi:latest
 
+
+SOLO PER PROVARE
 crea pod
 kubectl apply -f pod.yaml
-
-port forward (solo x provare)
+port forward
 kubectl port-forward myapi-pod 8080:8080
 
-
-per prod usa deployment:
+per prod usa deployment: crea un service anche, in load balancing, e 3 pods
 kubectl apply -f deployment.yaml
 
+poi provo:
+http://localhost/swagger-ui/index.html#/calculator-controller/multiplyByTwo
 
 
 

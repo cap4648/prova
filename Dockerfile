@@ -1,5 +1,8 @@
 #Dockerfile per usage in pipeline jenkins
 #Crea il docker a partire a jar esistente
+# richiede una build esterna
+#da usare con jenkins (dove la build è esterna)
+
 FROM eclipse-temurin:17
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
