@@ -5,6 +5,8 @@ d:\temp\prova
 http://localhost:8080/swagger-ui/index.html
 
 
+OCCHIO: SOTTO FUNZIONA SE LA PORTA DELL'APP E' 80
+
 crea immagine
 docker build -f Dockerfile_Standalone  -t myapi:latest  .
 
